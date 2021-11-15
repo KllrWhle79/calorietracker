@@ -1,0 +1,99 @@
+{
+  "swagger": "2.0",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Will return a canned message when the root URL is hit",
+        "summary": "Return a message for the root call",
+        "operationId": "root"
+      }
+    },
+    "/ping": {
+      "get": {
+        "description": "Returns a pong signifying the server is up",
+        "summary": "Return a message for the ping call",
+        "operationId": "ping"
+      }
+    },
+    "/user": {
+      "put": {
+        "description": "Creates a new user that must be of type: admin, or user.",
+        "tags": [
+          "user"
+        ],
+        "summary": "Creates new user for API",
+        "operationId": "createUser"
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "description": "If user does not exist, throws an exception. Will only return yourself if no admin permissions.",
+        "tags": [
+          "user"
+        ],
+        "summary": "Returns a user based on id",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id of the user",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "If Admin, can update any user. Otherwise can only update self.",
+        "tags": [
+          "user"
+        ],
+        "summary": "Updates a user based on id",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id of the user",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "If Admin, can delete any user. Otherwise, can only delete self.",
+        "tags": [
+          "user"
+        ],
+        "summary": "Deletes a user based on id",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id of the user",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "x-go-package": "github.com/KllrWhle79/calorietracker/api"
+    }
+  },
+  "responses": {
+    "userResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/User"
+      }
+    }
+  }
+}

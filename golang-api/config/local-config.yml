@@ -1,0 +1,9 @@
+logLevel: INFO
+
+# Postgres DB settings
+psqlHost: localhost
+psqlPort: 5432
+psqlUser: user
+psqlPassword: password
+psqlDB: calorietracker_db
+testPort: 5431
