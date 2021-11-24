@@ -39,11 +39,33 @@ func GetUserByUsername(userName string) (*UsersDBRow, error) {
 	return getUser(whereClause)
 }
 
-// GetUsersById /* Retrieves a user from the database via it's database id
-func GetUsersById(id int) (*UsersDBRow, error) {
+// GetUserById /* Retrieves a user from the database via it's database id
+func GetUserById(id int) (*UsersDBRow, error) {
 	whereClause := fmt.Sprintf("id='%d'", id)
 
 	return getUser(whereClause)
+}
+
+func GetUsersByIds(ids []int) (*[]UsersDBRow, error) {
+	whereClause := fmt.Sprintf("id in (%s)", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ids)), ","), "[]"))
+
+	var userRows []UsersDBRow
+	rows, err := GetRows("users", strings.Join(UsersColumns, ","), whereClause, "id")
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error finding user: %v", err))
+	}
+
+	for rows.Next() {
+		var userRow UsersDBRow
+		err = rows.Scan(&userRow.Id, &userRow.UserName, &userRow.EmailAddr, &userRow.Password, &userRow.Admin)
+		if err != nil {
+			continue
+		}
+
+		userRows = append(userRows, userRow)
+	}
+
+	return &userRows, nil
 }
 
 // DeleteUserByUsername /* Deletes a user from the database, looks up the user by username
@@ -64,7 +86,7 @@ func DeleteUserByUsername(userName string) (bool, error) {
 
 // DeleteUserById /* Deletes a user from the database, looks up the user by database id
 func DeleteUserById(id int) (bool, error) {
-	user, err := GetUsersById(id)
+	user, err := GetUserById(id)
 
 	if err != nil {
 		return false, errors.New(fmt.Sprintf("Could not find user to delete: %v", err))

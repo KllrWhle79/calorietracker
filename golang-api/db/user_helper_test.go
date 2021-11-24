@@ -51,7 +51,52 @@ func TestCreateNewUserAndLogin(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
+}
+
+func TestGetMultipleUsers(t *testing.T) {
+	err := Setup()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	if err != nil {
+		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
+		t.Fail()
+	}
+
+	id1, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	hashedPassword, err = bcrypt.GenerateFromPassword([]byte(testUser.Password), 14)
+	if err != nil {
+		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
+		t.Fail()
+	}
+
+	id2, err := CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.Admin)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	users, err := GetUsersByIds([]int{id1, id2})
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	} else {
+		if len(*users) != 2 {
+			t.Error(err)
+			t.Fail()
+		}
+	}
+
+	CleanUp()
 }
 
 func TestCreateNewUserFail(t *testing.T) {
@@ -79,7 +124,7 @@ func TestCreateNewUserFail(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestGetUserById(t *testing.T) {
@@ -101,7 +146,7 @@ func TestGetUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	user1, err := GetUsersById(id)
+	user1, err := GetUserById(id)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -112,13 +157,13 @@ func TestGetUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	user2, _ := GetUsersById(id + 1)
+	user2, _ := GetUserById(id + 1)
 	if user2 != nil {
 		t.Error("Should not have found user")
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestUserLoginBadUsername(t *testing.T) {
@@ -146,7 +191,7 @@ func TestUserLoginBadUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestUserLoginBadPassword(t *testing.T) {
@@ -174,7 +219,7 @@ func TestUserLoginBadPassword(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestDeleteUserById(t *testing.T) {
@@ -196,7 +241,7 @@ func TestDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestCreateAndDeleteUserById(t *testing.T) {
@@ -218,7 +263,7 @@ func TestCreateAndDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = GetUsersById(id)
+	_, err = GetUserById(id)
 	if err != nil {
 		t.Error(t)
 		t.Fail()
@@ -230,7 +275,7 @@ func TestCreateAndDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	user, err := GetUsersById(id)
+	user, err := GetUserById(id)
 	if err == nil || user != nil {
 		t.Error(t)
 		t.Fail()
@@ -256,7 +301,7 @@ func TestCreateAndDeleteUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = GetUsersById(id)
+	_, err = GetUserById(id)
 	if err != nil {
 		t.Error(t)
 		t.Fail()
@@ -268,7 +313,7 @@ func TestCreateAndDeleteUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	user, err := GetUsersById(id)
+	user, err := GetUserById(id)
 	if err == nil || user != nil {
 		t.Error(t)
 		t.Fail()
@@ -294,7 +339,7 @@ func TestDeleteUserByIdFail(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = GetUsersById(id)
+	_, err = GetUserById(id)
 	if err != nil {
 		t.Error(t)
 		t.Fail()
@@ -306,7 +351,7 @@ func TestDeleteUserByIdFail(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestDeleteUserByUsernameFail(t *testing.T) {
@@ -328,7 +373,7 @@ func TestDeleteUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = GetUsersById(id)
+	_, err = GetUserById(id)
 	if err != nil {
 		t.Error(t)
 		t.Fail()
@@ -340,7 +385,7 @@ func TestDeleteUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestUpdateUserById(t *testing.T) {
@@ -370,7 +415,7 @@ func TestUpdateUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestUpdateUserByUsername(t *testing.T) {
@@ -400,7 +445,7 @@ func TestUpdateUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }
 
 func TestUpdateUserByUsernameFail(t *testing.T) {
@@ -430,5 +475,5 @@ func TestUpdateUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	DropTables()
+	CleanUp()
 }

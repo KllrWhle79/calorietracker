@@ -67,6 +67,15 @@ func DropTable(tblName string) {
 	}
 }
 
+func DropSequence(seqName string) {
+	sqlQuery := fmt.Sprintf("DROP SEQUENCE IF EXISTS %s CASCADE", seqName)
+
+	_, err := DB.Exec(sqlQuery)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func TableExists(tableName string) bool {
 	sqlQuery := fmt.Sprintf("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = '%s')", tableName)
 
