@@ -4,8 +4,7 @@ import "net/http"
 
 type User struct {
 	ID        string `json:"id"`
-	FName     string `json:"first_name"`
-	LName     string `json:"last_name"`
+	UserName  string `json:"user_name"`
 	EmailAddr string `json:"email_addr"`
 	Admin     bool   `json:"admin"`
 }

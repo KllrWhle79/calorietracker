@@ -62,14 +62,3 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{"message": "pong ping pong"}
 	json.NewEncoder(w).Encode(response)
 }
-
-// swagger:operation POST /login root loginUser
-// ---
-// summary: Login user
-// description: "Logs in a user based on password and loads applicable calorie information. Loads admin console for admins"
-// responses:
-//  "200": "User logged in, JWT token created"
-//  "401": "Bad username or password"
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-
-}
