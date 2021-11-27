@@ -2,6 +2,21 @@ package db
 
 import "github.com/KllrWhle79/calorietracker/cmd"
 
+var (
+	testUser = UsersDBRow{
+		UserName:  "test_user1",
+		Password:  "password",
+		EmailAddr: "test_user1@email.com",
+		Admin:     false,
+	}
+	testAdminUser = UsersDBRow{
+		UserName:  "admin_test_user",
+		Password:  "password",
+		EmailAddr: "admin_test_user@email.com",
+		Admin:     true,
+	}
+)
+
 func Setup() error {
 	cmd.InitConfig()
 

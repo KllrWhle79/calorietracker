@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
 )
@@ -59,6 +60,28 @@ func GetUsersByIds(ids []int) (*[]UsersDBRow, error) {
 		var userRow UsersDBRow
 		err = rows.Scan(&userRow.Id, &userRow.UserName, &userRow.EmailAddr, &userRow.Password, &userRow.Admin)
 		if err != nil {
+			log.Debugf("Error scanning row: %v\n", err)
+			continue
+		}
+
+		userRows = append(userRows, userRow)
+	}
+
+	return &userRows, nil
+}
+
+func GetAllUsers() (*[]UsersDBRow, error) {
+	var userRows []UsersDBRow
+	rows, err := GetRows("users", strings.Join(UsersColumns, ","), "", "id")
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error finding users: %v", err))
+	}
+
+	for rows.Next() {
+		var userRow UsersDBRow
+		err = rows.Scan(&userRow.Id, &userRow.UserName, &userRow.EmailAddr, &userRow.Password, &userRow.Admin)
+		if err != nil {
+			log.Debugf("Error scanning row: %v\n", err)
 			continue
 		}
 
@@ -69,35 +92,35 @@ func GetUsersByIds(ids []int) (*[]UsersDBRow, error) {
 }
 
 // DeleteUserByUsername /* Deletes a user from the database, looks up the user by username
-func DeleteUserByUsername(userName string) (bool, error) {
+func DeleteUserByUsername(userName string) error {
 	user, err := GetUserByUsername(userName)
 
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Could not find user %s to delete: %v", userName, err))
+		return errors.New(fmt.Sprintf("Could not find user %s to delete: %v", userName, err))
 	}
 
 	err = DeleteRow("users", "id", user.Id)
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Error deleting user: %v", err))
+		return errors.New(fmt.Sprintf("Error deleting user: %v", err))
 	}
 
-	return true, nil
+	return nil
 }
 
 // DeleteUserById /* Deletes a user from the database, looks up the user by database id
-func DeleteUserById(id int) (bool, error) {
+func DeleteUserById(id int) error {
 	user, err := GetUserById(id)
 
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Could not find user to delete: %v", err))
+		return errors.New(fmt.Sprintf("Could not find user to delete: %v", err))
 	}
 
 	err = DeleteRow("users", "id", user.Id)
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Error deleting user: %v", err))
+		return errors.New(fmt.Sprintf("Error deleting user: %v", err))
 	}
 
-	return true, nil
+	return nil
 }
 
 // UpdateUserByUsername /* Updates a user's entry in the database, looks up the user by username

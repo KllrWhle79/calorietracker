@@ -6,21 +6,6 @@ import (
 	"testing"
 )
 
-var (
-	testUser = UsersDBRow{
-		UserName:  "test_user2",
-		Password:  "password",
-		EmailAddr: "test_user2@email.com",
-		Admin:     false,
-	}
-	adminUser = UsersDBRow{
-		UserName:  "test_user1",
-		Password:  "password",
-		EmailAddr: "test_user1@email.com",
-		Admin:     true,
-	}
-)
-
 func TestCreateNewUserAndLogin(t *testing.T) {
 	err := Setup()
 	if err != nil {
@@ -28,19 +13,19 @@ func TestCreateNewUserAndLogin(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
-	user, err := LoginUser(adminUser.UserName, adminUser.Password)
+	user, err := LoginUser(testAdminUser.UserName, testAdminUser.Password)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -61,13 +46,13 @@ func TestGetMultipleUsers(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id1, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id1, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -173,19 +158,19 @@ func TestUserLoginBadUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	_, err = CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
-	_, err = LoginUser("bad_username", adminUser.Password)
+	_, err = LoginUser("bad_username", testAdminUser.Password)
 	if err == nil {
 		t.Error(err)
 		t.Fail()
@@ -201,19 +186,19 @@ func TestUserLoginBadPassword(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	_, err = CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
-	_, err = LoginUser(adminUser.UserName, "bad_password")
+	_, err = LoginUser(testAdminUser.UserName, "bad_password")
 	if err == nil {
 		t.Error(err)
 		t.Fail()
@@ -229,13 +214,13 @@ func TestDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, adminUser.Password, adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, testAdminUser.Password, testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
-	_, err = DeleteUserById(id)
+	err = DeleteUserById(id)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -251,13 +236,13 @@ func TestCreateAndDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -269,8 +254,8 @@ func TestCreateAndDeleteUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	deleted, err := DeleteUserById(id)
-	if err != nil || !deleted {
+	err = DeleteUserById(id)
+	if err != nil {
 		t.Error(t)
 		t.Fail()
 	}
@@ -289,13 +274,13 @@ func TestCreateAndDeleteUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -307,8 +292,8 @@ func TestCreateAndDeleteUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	deleted, err := DeleteUserByUsername(adminUser.UserName)
-	if err != nil || !deleted {
+	err = DeleteUserByUsername(testAdminUser.UserName)
+	if err != nil {
 		t.Error(t)
 		t.Fail()
 	}
@@ -327,13 +312,13 @@ func TestDeleteUserByIdFail(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -345,8 +330,8 @@ func TestDeleteUserByIdFail(t *testing.T) {
 		t.Fail()
 	}
 
-	deleted, err := DeleteUserById(10000)
-	if err == nil || deleted {
+	err = DeleteUserById(10000)
+	if err == nil {
 		t.Error(t)
 		t.Fail()
 	}
@@ -361,13 +346,13 @@ func TestDeleteUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -379,8 +364,8 @@ func TestDeleteUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	deleted, err := DeleteUserByUsername("testUser")
-	if err == nil || deleted {
+	err = DeleteUserByUsername("testUser")
+	if err == nil {
 		t.Error(t)
 		t.Fail()
 	}
@@ -395,13 +380,13 @@ func TestUpdateUserById(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	id, err := CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -425,13 +410,13 @@ func TestUpdateUserByUsername(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	_, err = CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -439,7 +424,7 @@ func TestUpdateUserByUsername(t *testing.T) {
 
 	hashedPassword, err = bcrypt.GenerateFromPassword([]byte("new_password"), 14)
 
-	err = UpdateUserByUsername(adminUser.UserName, "updatedUser", "updatedUser@gmail.com", string(hashedPassword), false)
+	err = UpdateUserByUsername(testAdminUser.UserName, "updatedUser", "updatedUser@gmail.com", string(hashedPassword), false)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -455,13 +440,13 @@ func TestUpdateUserByUsernameFail(t *testing.T) {
 		t.Fail()
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminUser.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(testAdminUser.Password), 14)
 	if err != nil {
 		t.Error(fmt.Sprintf("Error hashing password on creation: %v", err))
 		t.Fail()
 	}
 
-	_, err = CreateNewUser(adminUser.UserName, adminUser.EmailAddr, string(hashedPassword), adminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.Admin)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

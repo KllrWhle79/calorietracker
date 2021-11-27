@@ -30,8 +30,11 @@ func makeRouter() *mux.Router {
 
 	router.HandleFunc("/user", CreateUser).Methods("PUT")
 	router.HandleFunc("/user", GetUser).Queries("id", "{id}").Methods("GET")
+	router.HandleFunc("/user", GetUser).Queries("username", "{username}").Methods("GET")
 	router.HandleFunc("/user", DeleteUser).Queries("id", "{id}").Methods("DELETE")
+	router.HandleFunc("/user", DeleteUser).Queries("username", "{username}").Methods("DELETE")
 	router.HandleFunc("/user", UpdateUser).Queries("id", "{id}").Methods("POST")
+	router.HandleFunc("/user", UpdateUser).Queries("username", "{username}").Methods("POST")
 
 	router.HandleFunc("/calories", CreateCalorieEntry).Methods("PUT")
 	router.HandleFunc("/calories", GetCaloriesForUser).Queries("id", "{id}").Methods("GET")
