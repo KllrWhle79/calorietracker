@@ -1,6 +1,8 @@
 package db
 
-import "github.com/KllrWhle79/calorietracker/cmd"
+import (
+	"github.com/KllrWhle79/calorietracker/config"
+)
 
 var (
 	testUser = UsersDBRow{
@@ -18,7 +20,7 @@ var (
 )
 
 func Setup() error {
-	cmd.InitConfig()
+	config.InitConfig()
 
 	err := InitTables(true)
 	return err

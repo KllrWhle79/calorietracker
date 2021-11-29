@@ -9,7 +9,7 @@ import (
 )
 
 func Start() {
-	router := makeRouter()
+	router := MakeRouter()
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000"},
@@ -21,7 +21,7 @@ func Start() {
 	log.Fatal(http.ListenAndServe(":8000", handler))
 }
 
-func makeRouter() *mux.Router {
+func MakeRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", RootHandler)
