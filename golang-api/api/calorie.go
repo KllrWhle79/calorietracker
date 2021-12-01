@@ -2,7 +2,7 @@ package api
 
 import "net/http"
 
-type Calorie struct {
+type calorie struct {
 	ID       string `json:"id"`
 	AcctID   string `json:"acct_id"`
 	Date     string `json:"date"`
@@ -10,9 +10,9 @@ type Calorie struct {
 }
 
 //swagger:response calorieResponse
-type CalorieResponse struct {
+type calorieResponse struct {
 	//in:body
-	Body Calorie
+	Body calorie
 }
 
 // swagger:operation PUT /calories calories createCalorieEntry
@@ -22,8 +22,8 @@ type CalorieResponse struct {
 // responses:
 //  "200": "New calorie entry created"
 //  "401": "Unauthorized Request"
-func CreateCalorieEntry(w http.ResponseWriter, r *http.Request) {
-}
+var createCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+})
 
 // swagger:operation GET /calories/{id} calories getCalorieEntries
 // ---
@@ -39,8 +39,8 @@ func CreateCalorieEntry(w http.ResponseWriter, r *http.Request) {
 //  "200":
 //    "$ref": "#/responses/calorieResponse
 //  "401": "Unauthorized Request"
-func GetCaloriesForUser(w http.ResponseWriter, r *http.Request) {
-}
+var getCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+})
 
 // swagger:operation POST /calories/{id} calories updateCalorieEntry
 // ---
@@ -53,10 +53,10 @@ func GetCaloriesForUser(w http.ResponseWriter, r *http.Request) {
 //   type: number
 //   required: true
 // responses:
-//  "200": "Calorie entry updated"
+//  "200": "calorie entry updated"
 //  "401": "Unauthorized Request"
-func UpdateCalorieEntry(w http.ResponseWriter, r *http.Request) {
-}
+var updateCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+})
 
 // swagger:operation DELETE /calories/{id} calories deleteCalorieEntry
 // ---
@@ -69,7 +69,7 @@ func UpdateCalorieEntry(w http.ResponseWriter, r *http.Request) {
 //   type: number
 //   required: true
 // responses:
-//  "200": "Calorie entry deleted"
+//  "200": "calorie entry deleted"
 //  "401": "Unauthorized Request"
-func DeleteCalorieEntry(w http.ResponseWriter, r *http.Request) {
-}
+var deleteCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+})

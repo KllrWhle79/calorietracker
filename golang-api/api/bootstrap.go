@@ -24,22 +24,22 @@ func Start() {
 func MakeRouter() *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", RootHandler)
-	router.HandleFunc("/ping", PingHandler)
-	router.HandleFunc("/login", LoginHandler).Methods("POST")
+	router.Handle("/", rootHandler)
+	router.Handle("/ping", pingHandler)
+	router.Handle("/login", loginHandler).Methods("POST")
 
-	router.HandleFunc("/user", CreateUser).Methods("PUT")
-	router.HandleFunc("/user", GetUser).Queries("id", "{id}").Methods("GET")
-	router.HandleFunc("/user", GetUser).Queries("username", "{username}").Methods("GET")
-	router.HandleFunc("/user", DeleteUser).Queries("id", "{id}").Methods("DELETE")
-	router.HandleFunc("/user", DeleteUser).Queries("username", "{username}").Methods("DELETE")
-	router.HandleFunc("/user", UpdateUser).Queries("id", "{id}").Methods("POST")
-	router.HandleFunc("/user", UpdateUser).Queries("username", "{username}").Methods("POST")
+	router.Handle("/user", createUser).Methods("PUT")
+	router.Handle("/user", authMiddleWare(getUser)).Queries("id", "{id}").Methods("GET")
+	router.Handle("/user", authMiddleWare(getUser)).Queries("username", "{username}").Methods("GET")
+	router.Handle("/user", authMiddleWare(deleteUser)).Queries("id", "{id}").Methods("DELETE")
+	router.Handle("/user", authMiddleWare(deleteUser)).Queries("username", "{username}").Methods("DELETE")
+	router.Handle("/user", authMiddleWare(updateUser)).Queries("id", "{id}").Methods("POST")
+	router.Handle("/user", authMiddleWare(updateUser)).Queries("username", "{username}").Methods("POST")
 
-	router.HandleFunc("/calories", CreateCalorieEntry).Methods("PUT")
-	router.HandleFunc("/calories", GetCaloriesForUser).Queries("id", "{id}").Methods("GET")
-	router.HandleFunc("/calories", DeleteCalorieEntry).Queries("id", "{id}").Methods("DELETE")
-	router.HandleFunc("/calories", UpdateCalorieEntry).Queries("id", "{id}").Methods("POST")
+	router.Handle("/calories", authMiddleWare(createCalorieEntry)).Methods("PUT")
+	router.Handle("/calories", authMiddleWare(getCalorieEntry)).Queries("id", "{id}").Methods("GET")
+	router.Handle("/calories", authMiddleWare(deleteCalorieEntry)).Queries("id", "{id}").Methods("DELETE")
+	router.Handle("/calories", authMiddleWare(updateCalorieEntry)).Queries("id", "{id}").Methods("POST")
 
 	return router
 }
@@ -50,10 +50,10 @@ func MakeRouter() *mux.Router {
 // description: Will return a canned message when the root URL is hit
 // responses:
 //	"200": "root handled"
-func RootHandler(w http.ResponseWriter, r *http.Request) {
+var rootHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{"message": "root handled"}
 	json.NewEncoder(w).Encode(response)
-}
+})
 
 // swagger:operation GET /ping root pingPong
 // ---
@@ -61,7 +61,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 // description: Returns a pong signifying the server is up
 // responses:
 //	"200": "root handled"
-func PingHandler(w http.ResponseWriter, r *http.Request) {
+var pingHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{"message": "pong ping pong"}
 	json.NewEncoder(w).Encode(response)
-}
+})

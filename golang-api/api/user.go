@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-type User struct {
+type user struct {
 	Id        string `json:"id"`
 	UserName  string `json:"user_name"`
 	EmailAddr string `json:"email_addr"`
@@ -18,9 +18,9 @@ type User struct {
 }
 
 //swagger:response userResponse
-type UserResponse struct {
+type userResponse struct {
 	//in:body
-	Body User
+	Body user
 }
 
 // swagger:operation PUT /user user createUser
@@ -31,8 +31,8 @@ type UserResponse struct {
 // 	 "200": "New user created"
 //   "400": "Bad request"
 // 	 "401": "Unauthorized Request"
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var userData User
+var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var userData user
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -55,7 +55,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(userData)
-}
+})
 
 // swagger:operation GET /user/{id} user getUser
 // ---
@@ -77,7 +77,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 //     "$ref": "#/responses/userResponse"
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
-func GetUser(w http.ResponseWriter, r *http.Request) {
+var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	id, foundId := mux.Vars(r)["id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
@@ -94,7 +94,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userData := User{
+		userData := user{
 			Id:        strconv.Itoa(userRow.Id),
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
@@ -111,7 +111,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userData := User{
+		userData := user{
 			Id:        strconv.Itoa(userRow.Id),
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
@@ -125,7 +125,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-}
+})
 
 // swagger:operation POST /user/{id} user updateUser
 // ---
@@ -143,11 +143,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 //   type: string
 //   required: false
 // responses:
-//   "200": "User updated"
+//   "200": "user updated"
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	var userData User
+var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var userData user
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -187,7 +187,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	return
-}
+})
 
 // swagger:operation DELETE /user/{id} user deleteUser
 // ---
@@ -205,10 +205,10 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 //   type: string
 //   required: false
 // responses:
-//   "200": "User deleted"
+//   "200": "user deleted"
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+var deleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	id, foundId := mux.Vars(r)["id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
@@ -238,4 +238,4 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-}
+})

@@ -16,7 +16,7 @@ var (
 
 var Router *mux.Router
 
-func ApiTestSetup() error {
+func TestSetup() error {
 	Router = MakeRouter()
 
 	config.InitConfig()
@@ -24,7 +24,7 @@ func ApiTestSetup() error {
 	return db.InitTables(true)
 }
 
-func ApiCleanUp() {
+func CleanUp() {
 	DropTables()
 	DropSequences()
 }
