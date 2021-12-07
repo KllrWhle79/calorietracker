@@ -47,10 +47,10 @@ func GetUserById(id int) (*UsersDBRow, error) {
 	return getUser(whereClause)
 }
 
-func GetUsersByIds(ids []int) (*[]UsersDBRow, error) {
+func GetUsersByIds(ids []int) ([]*UsersDBRow, error) {
 	whereClause := fmt.Sprintf("id in (%s)", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ids)), ","), "[]"))
 
-	var userRows []UsersDBRow
+	var userRows []*UsersDBRow
 	rows, err := GetRows("users", strings.Join(UsersColumns, ","), whereClause, "id")
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Error finding user: %v", err))
@@ -64,10 +64,10 @@ func GetUsersByIds(ids []int) (*[]UsersDBRow, error) {
 			continue
 		}
 
-		userRows = append(userRows, userRow)
+		userRows = append(userRows, &userRow)
 	}
 
-	return &userRows, nil
+	return userRows, nil
 }
 
 func GetAllUsers() (*[]UsersDBRow, error) {
@@ -121,16 +121,6 @@ func DeleteUserById(id int) error {
 	}
 
 	return nil
-}
-
-// UpdateUserByUsername /* Updates a user's entry in the database, looks up the user by username
-func UpdateUserByUsername(oldUserNam, userName, emailAddr, password string, admin bool) error {
-	user, err := GetUserByUsername(oldUserNam)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error finding user %s to update: %v", userName, err))
-	}
-
-	return UpdateUserById(user.Id, userName, emailAddr, password, admin)
 }
 
 // UpdateUserById /* Updates a user's entry in the database, looks up the user by database id

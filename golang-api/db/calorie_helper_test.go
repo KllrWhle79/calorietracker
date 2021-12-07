@@ -12,7 +12,7 @@ var calorieRow = CaloriesDBRow{
 }
 
 func TestGetCalorieRowById(t *testing.T) {
-	err := Setup()
+	err := setup()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -24,7 +24,7 @@ func TestGetCalorieRowById(t *testing.T) {
 		t.Fail()
 	}
 
-	row, err := GetCalorieRowById(id)
+	row, err := GetCalorieRowById(calorieRow.AcctId, id)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -35,11 +35,11 @@ func TestGetCalorieRowById(t *testing.T) {
 		}
 	}
 
-	CleanUp()
+	cleanUp()
 }
 
 func TestDeleteCalorieRow(t *testing.T) {
-	err := Setup()
+	err := setup()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -57,11 +57,11 @@ func TestDeleteCalorieRow(t *testing.T) {
 		t.Fail()
 	}
 
-	CleanUp()
+	cleanUp()
 }
 
 func TestUpdateCalorieRow(t *testing.T) {
-	err := Setup()
+	err := setup()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -85,5 +85,5 @@ func TestUpdateCalorieRow(t *testing.T) {
 		t.Fail()
 	}
 
-	CleanUp()
+	cleanUp()
 }

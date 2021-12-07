@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -11,7 +12,11 @@ import (
 	"time"
 )
 
-const mySecretKey = "20036BUTTERFLY*JESSROSE0405*"
+const mySecretKey = "918459fb-2eca-464e-97fe-ba0742b525e3"
+
+type idStruct struct {
+	ID int `json:"id"`
+}
 
 func authMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +39,7 @@ func authMiddleWare(next http.Handler) http.Handler {
 		}
 
 		claimUsername := claims.(jwt.MapClaims)["username"].(string)
-		claimId := claims.(jwt.MapClaims)["id"].(float64)
+		claimUserId := claims.(jwt.MapClaims)["id"].(float64)
 		admin := claims.(jwt.MapClaims)["admin"].(bool)
 		exp := int64(claims.(jwt.MapClaims)["exp"].(float64))
 
@@ -44,8 +49,15 @@ func authMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 
+		var idJson idStruct
+		err = json.NewDecoder(r.Body).Decode(&idJson)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		if !admin {
-			if (foundId && reqId != strconv.Itoa(int(claimId))) || (foundUsername && reqUsername != claimUsername) {
+			if (foundId && reqId != strconv.Itoa(int(claimUserId))) || idJson.ID != int(claimUserId) || (foundUsername && reqUsername != claimUsername) {
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write([]byte("Operation Not Allowed"))
 				return

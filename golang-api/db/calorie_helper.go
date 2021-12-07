@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -25,8 +26,8 @@ func DeleteCalorieRow(rowId int) error {
 	return nil
 }
 
-func GetCalorieRowById(rowId int) (*CaloriesDBRow, error) {
-	whereClause := fmt.Sprintf("id='%d'", rowId)
+func GetCalorieRowById(acctId, rowId int) (*CaloriesDBRow, error) {
+	whereClause := fmt.Sprintf("acctId='%d' AND id='%d'", acctId, rowId)
 
 	var calorieRow CaloriesDBRow
 	err := GetSingleRow("calories", strings.Join(CaloriesColumns, ","), whereClause).
@@ -36,6 +37,27 @@ func GetCalorieRowById(rowId int) (*CaloriesDBRow, error) {
 	}
 
 	return &calorieRow, nil
+}
+
+func GetAllCalorieRowsByAcctId(acctId int) (*[]CaloriesDBRow, error) {
+	var calorieRows []CaloriesDBRow
+	rows, err := GetRows("calories", strings.Join(CaloriesColumns, ","), fmt.Sprintf("acctId=%d", acctId), "id")
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error getting all calories for user %d: %v", acctId, err))
+	}
+
+	for rows.Next() {
+		var calorieRow CaloriesDBRow
+		err = rows.Scan(&calorieRow.Id, &calorieRow.AcctId, &calorieRow.Date, &calorieRow.Calories)
+		if err != nil {
+			log.Debugf("Error scanning rowL : %v", err)
+			continue
+		}
+
+		calorieRows = append(calorieRows, calorieRow)
+	}
+
+	return &calorieRows, nil
 }
 
 func UpdateCalorieRow(rowId, acctId, calories int, timestamp time.Time) error {

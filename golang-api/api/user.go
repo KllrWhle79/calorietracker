@@ -10,7 +10,7 @@ import (
 )
 
 type user struct {
-	Id        string `json:"id"`
+	Id        int    `json:"id"`
 	UserName  string `json:"user_name"`
 	EmailAddr string `json:"email_addr"`
 	Password  string `json:"password"`
@@ -20,7 +20,16 @@ type user struct {
 //swagger:response userResponse
 type userResponse struct {
 	//in:body
-	Body user
+	Body []user
+}
+
+func sendUserResp(w http.ResponseWriter, userData []user) {
+	userResp := userResponse{
+		Body: userData,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(userResp)
 }
 
 // swagger:operation PUT /user user createUser
@@ -45,16 +54,17 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, string(hashedPassword), userData.Admin)
+	userData.Password = string(hashedPassword)
+
+	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	userData.Id = strconv.Itoa(newUserId)
+	userData.Id = newUserId
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userData)
+	sendUserResp(w, []user{userData})
 })
 
 // swagger:operation GET /user/{id} user getUser
@@ -95,7 +105,7 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		userData := user{
-			Id:        strconv.Itoa(userRow.Id),
+			Id:        userRow.Id,
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
@@ -111,26 +121,50 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userData := user{
-			Id:        strconv.Itoa(userRow.Id),
+		sendUserResp(w, []user{{
+			Id:        userRow.Id,
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
 			Admin:     userRow.Admin,
-		}
+		}})
+	}
+})
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(userData)
-	} else {
+// swagger:operation GET /users users getAllUsers
+// ---
+// summary: Retrieves all users from database
+// description: If Admin, gets a list of all the users in the database
+// responses:
+//   "200":
+//     "$ref": "#/responses/userResponse"
+//   "400": "Bad request"
+//   "401": "Unauthorized Request"
+var getAllUsers = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var users []user
+	usersData, err := db.GetAllUsers()
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	for _, userData := range *usersData {
+		users = append(users, user{
+			Id:        userData.Id,
+			UserName:  userData.UserName,
+			EmailAddr: userData.EmailAddr,
+			Password:  userData.Password,
+			Admin:     userData.Admin,
+		})
+	}
+
+	sendUserResp(w, users)
 })
 
 // swagger:operation POST /user/{id} user updateUser
 // ---
 // summary: Updates a user based on id
-// description: If Admin, can update any user. Otherwise can only update self.
+// description: If Admin, can update any user. Otherwise, can only update self.
 // parameters:
 // - name: id
 //   in: path
@@ -143,7 +177,8 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 //   type: string
 //   required: false
 // responses:
-//   "200": "user updated"
+//   "200":
+//     "$ref": "#/responses/userResponse"
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
 var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -154,14 +189,10 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 14)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	id, foundId := mux.Vars(r)["id"]
 	username, foundUsername := mux.Vars(r)["username"]
+
+	var userToUpdate *db.UsersDBRow
 
 	if foundId {
 		intId, err := strconv.Atoi(id)
@@ -170,23 +201,35 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = db.UpdateUserById(intId, userData.UserName, userData.EmailAddr, string(hashedPassword), userData.Admin)
+		userToUpdate, err = db.GetUserById(intId)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 	} else if foundUsername {
-		err := db.UpdateUserByUsername(username, userData.UserName, userData.EmailAddr, string(hashedPassword), userData.Admin)
+		userToUpdate, err = db.GetUserByUsername(username)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		return
 	}
 
-	return
+	if userData.Password != userToUpdate.Password {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 14)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		userData.Password = string(hashedPassword)
+	}
+
+	err = db.UpdateUserById(userToUpdate.Id, userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	sendUserResp(w, []user{userData})
 })
 
 // swagger:operation DELETE /user/{id} user deleteUser
@@ -224,18 +267,11 @@ var deleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
-		return
 	} else if foundUsername {
 		err := db.DeleteUserByUsername(username)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
-		return
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		return
 	}
 })

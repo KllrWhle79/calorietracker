@@ -19,19 +19,19 @@ var (
 	}
 )
 
-func Setup() error {
+func setup() error {
 	config.InitConfig()
 
 	err := InitTables(true)
 	return err
 }
 
-func CleanUp() {
-	DropTables()
-	DropSequences()
+func cleanUp() {
+	dropTables()
+	dropSequences()
 }
 
-func DropTables() {
+func dropTables() {
 	for _, tbl := range TableList {
 		if TableExists(tbl) {
 			DropTable(tbl)
@@ -39,7 +39,7 @@ func DropTables() {
 	}
 }
 
-func DropSequences() {
+func dropSequences() {
 	for _, seq := range TableList {
 		if SequeneceExists(seq + "_seq") {
 			DropSequence(seq + "_seq")

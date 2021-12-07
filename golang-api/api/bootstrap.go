@@ -13,7 +13,7 @@ func Start() {
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000"},
-		AllowedMethods: []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"},
+		AllowedMethods: []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions},
 		AllowedHeaders: []string{"X-Requested-With", "Content-Type"},
 	})
 
@@ -26,20 +26,22 @@ func MakeRouter() *mux.Router {
 
 	router.Handle("/", rootHandler)
 	router.Handle("/ping", pingHandler)
-	router.Handle("/login", loginHandler).Methods("POST")
+	router.Handle("/login", loginHandler).Methods(http.MethodPost)
 
-	router.Handle("/user", createUser).Methods("PUT")
-	router.Handle("/user", authMiddleWare(getUser)).Queries("id", "{id}").Methods("GET")
-	router.Handle("/user", authMiddleWare(getUser)).Queries("username", "{username}").Methods("GET")
-	router.Handle("/user", authMiddleWare(deleteUser)).Queries("id", "{id}").Methods("DELETE")
-	router.Handle("/user", authMiddleWare(deleteUser)).Queries("username", "{username}").Methods("DELETE")
-	router.Handle("/user", authMiddleWare(updateUser)).Queries("id", "{id}").Methods("POST")
-	router.Handle("/user", authMiddleWare(updateUser)).Queries("username", "{username}").Methods("POST")
+	router.Handle("/user", createUser).Methods(http.MethodPut)
+	router.Handle("/user", authMiddleWare(getUser)).Queries("id", "{id}").Methods(http.MethodGet)
+	router.Handle("/user", authMiddleWare(getUser)).Queries("username", "{username}").Methods(http.MethodGet)
+	router.Handle("/user", authMiddleWare(deleteUser)).Queries("id", "{id}").Methods(http.MethodDelete)
+	router.Handle("/user", authMiddleWare(deleteUser)).Queries("username", "{username}").Methods(http.MethodDelete)
+	router.Handle("/user", authMiddleWare(updateUser)).Queries("id", "{id}").Methods(http.MethodPost)
+	router.Handle("/user", authMiddleWare(updateUser)).Queries("username", "{username}").Methods(http.MethodPost)
+	router.Handle("/users", authMiddleWare(getAllUsers)).Methods(http.MethodGet)
 
-	router.Handle("/calories", authMiddleWare(createCalorieEntry)).Methods("PUT")
-	router.Handle("/calories", authMiddleWare(getCalorieEntry)).Queries("id", "{id}").Methods("GET")
-	router.Handle("/calories", authMiddleWare(deleteCalorieEntry)).Queries("id", "{id}").Methods("DELETE")
-	router.Handle("/calories", authMiddleWare(updateCalorieEntry)).Queries("id", "{id}").Methods("POST")
+	router.Handle("/calories", authMiddleWare(createCalorieEntry)).Methods(http.MethodPut)
+	router.Handle("/calories", authMiddleWare(getAllCaloriesForUser)).Queries("id", "{id}").Methods(http.MethodGet)
+	router.Handle("/calories", authMiddleWare(getCalorieEntry)).Queries("id", "{id}", "calId", "{calId}").Methods(http.MethodGet)
+	router.Handle("/calories", authMiddleWare(deleteCalorieEntry)).Queries("id", "{id}", "calId", "{calId}").Methods(http.MethodDelete)
+	router.Handle("/calories", authMiddleWare(updateCalorieEntry)).Methods(http.MethodPost)
 
 	return router
 }
