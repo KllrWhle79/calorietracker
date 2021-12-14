@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -15,7 +16,7 @@ func TestGetSameUserById(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -24,7 +25,7 @@ func TestGetSameUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?id=%s", testUserData.Id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -46,7 +47,7 @@ func TestGetDifferentUserNotAdmin(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -55,7 +56,7 @@ func TestGetDifferentUserNotAdmin(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?id=100"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -77,9 +78,9 @@ func TestGetDifferentUserAdmin(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	nonAdminId := testUserData.Id
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	nonAdminId := testUserData.Body[0].Id
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -88,7 +89,7 @@ func TestGetDifferentUserAdmin(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?id=%s", nonAdminId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", nonAdminId), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -110,7 +111,7 @@ func TestGetUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -119,7 +120,7 @@ func TestGetUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?id=badId"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=badId"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -141,7 +142,7 @@ func TestGetUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -150,7 +151,7 @@ func TestGetUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?id=100"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -172,7 +173,7 @@ func TestGetSameUserByUsername(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -181,7 +182,7 @@ func TestGetSameUserByUsername(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?username=%s", testUserData.UserName), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -203,7 +204,7 @@ func TestGetUserByUsernameNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -234,7 +235,7 @@ func TestDeleteUserById(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -243,7 +244,7 @@ func TestDeleteUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?id=%s", testUserData.Id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -265,7 +266,7 @@ func TestDeleteUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -274,7 +275,7 @@ func TestDeleteUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?id=badid"), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=badid"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -296,7 +297,7 @@ func TestDeleteUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -305,7 +306,7 @@ func TestDeleteUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?id=100"), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -327,7 +328,7 @@ func TestDeleteUserByUsername(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -336,7 +337,7 @@ func TestDeleteUserByUsername(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?username=%s", testUserData.UserName), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -358,7 +359,7 @@ func TestDeleteUserByUsernameNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, true)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -389,9 +390,9 @@ func TestUpdateUserById(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	userId := testUserData.Id
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	userId := testUserData.Body[0].Id
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -400,7 +401,7 @@ func TestUpdateUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?id=%s", userId), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=%d", userId), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -422,8 +423,8 @@ func TestUpdateUserByIdFailNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -432,7 +433,7 @@ func TestUpdateUserByIdFailNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?id=100"), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=100"), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -454,8 +455,8 @@ func TestUpdateUserByIdFailBadId(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -464,7 +465,7 @@ func TestUpdateUserByIdFailBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?id=badid"), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=badid"), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -486,9 +487,9 @@ func TestUpdateUserByUsername(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	userName := testUserData.UserName
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	userName := testUserData.Body[0].UserName
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -519,8 +520,8 @@ func TestUpdateUserByUsernameFailNoUser(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
-	createUserForTest(t, true)
+	createUserForTest(t, testUser)
+	createUserForTest(t, testAdminUser)
 	loginTestUser(t, true)
 
 	if testTokenData.TokenString == "" {
@@ -539,6 +540,47 @@ func TestUpdateUserByUsernameFailNoUser(t *testing.T) {
 
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusBadRequest, response.Code)
+
+	cleanUp()
+}
+
+func TestGetAllUsers(t *testing.T) {
+	err := testSetup()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	createUserForTest(t, testUser)
+	createUserForTest(t, testUser2)
+	createUserForTest(t, testAdminUser)
+	loginTestUser(t, true)
+
+	if testTokenData.TokenString == "" {
+		t.Error("Error creating user or token data")
+		t.Fail()
+		return
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("/users"), nil)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", testTokenData.TokenString))
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var userResponse userResponse
+	json.NewDecoder(response.Body).Decode(&userResponse)
+	if len(userResponse.Body) != 3 {
+		t.Error("Not enough users retrieved")
+		t.Fail()
+		return
+	}
 
 	cleanUp()
 }

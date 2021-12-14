@@ -13,13 +13,14 @@ import (
 
 var (
 	testUser       = []byte(`{"user_name": "test_user1","password": "password","email_addr": "test_user1@email.com","admin": false}`)
+	testUser2      = []byte(`{"user_name": "test_user2","password": "password","email_addr": "test_user2@email.com","admin": false}`)
 	testUserUpdate = []byte(`{"user_name": "test_user1","password": "password1","email_addr": "test_user1@email.com","admin": false}`)
 	testAdminUser  = []byte(`{"user_name": "admin_test_user1","password": "password","email_addr": "admin_test_user1@email.com","admin": true}`)
 )
 
 var testRouter *mux.Router
 var testTokenData token
-var testUserData user
+var testUserData userResponse
 
 func testSetup() error {
 	testRouter = MakeRouter()
@@ -64,13 +65,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 	}
 }
 
-func createUserForTest(t *testing.T, admin bool) *httptest.ResponseRecorder {
-	var userStr []byte
-	if admin {
-		userStr = testAdminUser
-	} else {
-		userStr = testUser
-	}
+func createUserForTest(t *testing.T, userStr []byte) *httptest.ResponseRecorder {
 	req, err := http.NewRequest("PUT", "/user", bytes.NewBuffer(userStr))
 	if err != nil {
 		t.Error(err)

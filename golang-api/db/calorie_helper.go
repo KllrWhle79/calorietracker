@@ -27,7 +27,7 @@ func DeleteCalorieRow(rowId int) error {
 }
 
 func GetCalorieRowById(acctId, rowId int) (*CaloriesDBRow, error) {
-	whereClause := fmt.Sprintf("acctId='%d' AND id='%d'", acctId, rowId)
+	whereClause := fmt.Sprintf("acct_id='%d' AND id='%d'", acctId, rowId)
 
 	var calorieRow CaloriesDBRow
 	err := GetSingleRow("calories", strings.Join(CaloriesColumns, ","), whereClause).
@@ -41,7 +41,7 @@ func GetCalorieRowById(acctId, rowId int) (*CaloriesDBRow, error) {
 
 func GetAllCalorieRowsByAcctId(acctId int) (*[]CaloriesDBRow, error) {
 	var calorieRows []CaloriesDBRow
-	rows, err := GetRows("calories", strings.Join(CaloriesColumns, ","), fmt.Sprintf("acctId=%d", acctId), "id")
+	rows, err := GetRows("calories", strings.Join(CaloriesColumns, ","), fmt.Sprintf("acct_id=%d", acctId), "id")
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Error getting all calories for user %d: %v", acctId, err))
 	}

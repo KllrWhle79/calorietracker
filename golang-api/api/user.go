@@ -10,7 +10,7 @@ import (
 )
 
 type user struct {
-	Id        int    `json:"id"`
+	Id        int    `json:"acct_id"`
 	UserName  string `json:"user_name"`
 	EmailAddr string `json:"email_addr"`
 	Password  string `json:"password"`
@@ -67,12 +67,12 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	sendUserResp(w, []user{userData})
 })
 
-// swagger:operation GET /user/{id} user getUser
+// swagger:operation GET /user/{acct_id} user getUser
 // ---
 // summary: Returns a user based on id
 // description: If user does not exist, throws an exception. Will only return yourself if no admin permissions.
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: number
@@ -88,7 +88,7 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
 var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	id, foundId := mux.Vars(r)["id"]
+	id, foundId := mux.Vars(r)["acct_id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
 	if foundId {
@@ -161,12 +161,12 @@ var getAllUsers = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	sendUserResp(w, users)
 })
 
-// swagger:operation POST /user/{id} user updateUser
+// swagger:operation POST /user/{acct_id} user updateUser
 // ---
 // summary: Updates a user based on id
 // description: If Admin, can update any user. Otherwise, can only update self.
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: string
@@ -189,7 +189,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, foundId := mux.Vars(r)["id"]
+	id, foundId := mux.Vars(r)["acct_id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
 	var userToUpdate *db.UsersDBRow
@@ -232,12 +232,12 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	sendUserResp(w, []user{userData})
 })
 
-// swagger:operation DELETE /user/{id} user deleteUser
+// swagger:operation DELETE /user/{acct_id} user deleteUser
 // ---
 // summary: Deletes a user based on id
 // description: If Admin, can delete any user. Otherwise, can only delete self.
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: string
@@ -252,7 +252,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 //   "400": "Bad request"
 //   "401": "Unauthorized Request"
 var deleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	id, foundId := mux.Vars(r)["id"]
+	id, foundId := mux.Vars(r)["acct_id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
 	if foundId {

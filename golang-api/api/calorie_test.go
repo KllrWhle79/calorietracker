@@ -1,10 +1,15 @@
 package api
 
 import (
+	"bytes"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"testing"
+	"time"
 )
+
+var testCalorieJson = `{"acct_id": %d,"calories": %d,"date":"%s"}`
 
 func TestCreateNewCalorieEntry(t *testing.T) {
 	err := testSetup()
@@ -14,7 +19,7 @@ func TestCreateNewCalorieEntry(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, false)
+	createUserForTest(t, testUser)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -23,7 +28,9 @@ func TestCreateNewCalorieEntry(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("/calorie?id=%s", testUserData.Id), nil)
+	calorieJson := fmt.Sprintf(testCalorieJson, testUserData.Body[0].Id, rand.Intn(4000), time.Now().Format("2006-01-02 15:04:05"))
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("/calories"), bytes.NewBuffer([]byte(calorieJson)))
 	if err != nil {
 		t.Error(err)
 		t.Fail()

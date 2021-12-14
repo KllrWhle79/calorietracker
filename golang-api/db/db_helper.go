@@ -6,6 +6,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
+	"strings"
 )
 
 var DB *sql.DB
@@ -162,9 +163,15 @@ func GetSingleRow(tblName, columns, whereClause string) *sql.Row {
 }
 
 func GetRows(tblName, columns, whereClause, orderBy string) (*sql.Rows, error) {
-	sqlQuery := fmt.Sprintf("SELECT %s FROM %s WHERE %s ORDER BY %s", columns, tblName, whereClause, orderBy)
+	var sqlQuery strings.Builder
 
-	rows, err := DB.Query(sqlQuery)
+	sqlQuery.WriteString(fmt.Sprintf("SELECT %s FROM %s", columns, tblName))
+	if whereClause != "" {
+		sqlQuery.WriteString(fmt.Sprintf(" WHERE %s", whereClause))
+	}
+	sqlQuery.WriteString(fmt.Sprintf(" ORDER BY %s", orderBy))
+
+	rows, err := DB.Query(sqlQuery.String())
 	if err != nil || rows.Err() != nil {
 		var errorMsg error
 		if err == nil {

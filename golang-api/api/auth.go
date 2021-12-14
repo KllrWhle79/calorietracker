@@ -1,11 +1,13 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,13 +17,13 @@ import (
 const mySecretKey = "918459fb-2eca-464e-97fe-ba0742b525e3"
 
 type idStruct struct {
-	ID int `json:"id"`
+	ID int `json:"acct_id"`
 }
 
-func authMiddleWare(next http.Handler) http.Handler {
+func authMiddleWare(next http.Handler, adminOnly bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		reqId, foundId := mux.Vars(r)["id"]
+		reqId, foundId := mux.Vars(r)["acct_id"]
 		reqUsername, foundUsername := mux.Vars(r)["username"]
 
 		tokenString := r.Header.Get("Authorization")
@@ -39,7 +41,7 @@ func authMiddleWare(next http.Handler) http.Handler {
 		}
 
 		claimUsername := claims.(jwt.MapClaims)["username"].(string)
-		claimUserId := claims.(jwt.MapClaims)["id"].(float64)
+		claimUserId := claims.(jwt.MapClaims)["acct_id"].(float64)
 		admin := claims.(jwt.MapClaims)["admin"].(bool)
 		exp := int64(claims.(jwt.MapClaims)["exp"].(float64))
 
@@ -49,15 +51,35 @@ func authMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 
-		var idJson idStruct
-		err = json.NewDecoder(r.Body).Decode(&idJson)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+		if adminOnly && !admin {
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		if !admin {
-			if (foundId && reqId != strconv.Itoa(int(claimUserId))) || idJson.ID != int(claimUserId) || (foundUsername && reqUsername != claimUsername) {
+			idJson := idStruct{ID: -1}
+			if r.Body != nil {
+				bodyStr, err := ioutil.ReadAll(r.Body)
+				if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				err = r.Body.Close()
+				if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				r.Body = ioutil.NopCloser(bytes.NewReader(bodyStr))
+				err = json.Unmarshal(bodyStr, &idJson)
+				if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+			}
+
+			if (foundId && reqId != strconv.Itoa(int(claimUserId))) ||
+				(idJson.ID > 0 && idJson.ID != int(claimUserId)) ||
+				(foundUsername && reqUsername != claimUsername) {
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write([]byte("Operation Not Allowed"))
 				return
@@ -74,7 +96,7 @@ func generateJWT(username string, admin bool, id int) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["username"] = username
-	claims["id"] = id
+	claims["acct_id"] = id
 	claims["admin"] = admin
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 

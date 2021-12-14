@@ -27,7 +27,7 @@ func TestCreateUserAndLogin(t *testing.T) {
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	var userData user
+	var userData userResponse
 	json.NewDecoder(response.Body).Decode(&userData)
 
 	loginJson := []byte(`{"user_name": "admin_test_user1","password": "password"}`)
@@ -45,7 +45,7 @@ func TestCreateUserAndLogin(t *testing.T) {
 	var tokenData token
 	json.NewDecoder(response.Body).Decode(&tokenData)
 
-	req, err = http.NewRequest("GET", fmt.Sprintf("/user?id=%s", userData.Id), nil)
+	req, err = http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", userData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -78,7 +78,7 @@ func TestCreateUserAndLoginFail(t *testing.T) {
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	var userData user
+	var userData userResponse
 	json.NewDecoder(response.Body).Decode(&userData)
 
 	loginJson := []byte(`{"user_name": "admin_test_user1","password": "badpassword"}`)
