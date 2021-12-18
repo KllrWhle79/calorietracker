@@ -62,7 +62,7 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userData.Id = newUserId
+	userData.Id = int(newUserId)
 
 	sendUserResp(w, []user{userData})
 })
@@ -98,14 +98,14 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userRow, err := db.GetUserById(intId)
+		userRow, err := db.GetUserById(uint(intId))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		userData := user{
-			Id:        userRow.Id,
+			Id:        int(userRow.ID),
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
@@ -122,7 +122,7 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		sendUserResp(w, []user{{
-			Id:        userRow.Id,
+			Id:        int(userRow.ID),
 			UserName:  userRow.UserName,
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
@@ -150,7 +150,7 @@ var getAllUsers = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 
 	for _, userData := range *usersData {
 		users = append(users, user{
-			Id:        userData.Id,
+			Id:        int(userData.ID),
 			UserName:  userData.UserName,
 			EmailAddr: userData.EmailAddr,
 			Password:  userData.Password,
@@ -192,7 +192,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	id, foundId := mux.Vars(r)["acct_id"]
 	username, foundUsername := mux.Vars(r)["username"]
 
-	var userToUpdate *db.UsersDBRow
+	var userToUpdate *db.Users
 
 	if foundId {
 		intId, err := strconv.Atoi(id)
@@ -201,7 +201,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userToUpdate, err = db.GetUserById(intId)
+		userToUpdate, err = db.GetUserById(uint(intId))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -224,7 +224,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userData.Password = string(hashedPassword)
 	}
 
-	err = db.UpdateUserById(userToUpdate.Id, userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
+	err = db.UpdateUserById(userToUpdate.ID, userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
@@ -262,7 +262,7 @@ var deleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = db.DeleteUserById(intId)
+		err = db.DeleteUserById(uint(intId))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return

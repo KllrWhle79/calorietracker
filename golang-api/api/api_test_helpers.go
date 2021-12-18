@@ -31,24 +31,7 @@ func testSetup() error {
 }
 
 func cleanUp() {
-	dropTables()
-	dropSequences()
-}
-
-func dropTables() {
-	for _, tbl := range db.TableList {
-		if db.TableExists(tbl) {
-			db.DropTable(tbl)
-		}
-	}
-}
-
-func dropSequences() {
-	for _, seq := range db.TableList {
-		if db.SequeneceExists(seq + "_seq") {
-			db.DropSequence(seq + "_seq")
-		}
-	}
+	db.DropTables()
 }
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {

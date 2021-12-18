@@ -3,80 +3,62 @@ package db
 import (
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"strings"
+	"gorm.io/gorm"
 	"time"
 )
 
-func CreateNewCalorieRow(calories, acctId int, timestamp time.Time) (int, error) {
-	valuesString := fmt.Sprintf("nextval('calories_seq'), %d, '%s', %d", acctId, timestamp.Format("2006-01-02 15:04:05"), calories)
-	id, err := CreateRow("calories", strings.Join(CaloriesColumns, ","), valuesString, "id")
-	if err != nil {
-		return -1, errors.New(fmt.Sprintf("Error creating calorie row: %v", err))
+func CreateNewCalorieRow(calories, acctId int, timestamp time.Time) (uint, error) {
+	calorie := Calories{
+		AcctId:   acctId,
+		Date:     timestamp,
+		Calories: calories,
+	}
+	result := DB.Create(&calorie)
+	if result.Error != nil {
+		return 0, errors.New(fmt.Sprintf("Error creating calorie row: %v", result.Error))
 	}
 
-	return id, nil
+	return calorie.ID, nil
 }
 
-func DeleteCalorieRow(rowId int) error {
-	err := DeleteRow("calories", "id", rowId)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error deleting calorie row: %v", err))
+func DeleteCalorieRow(rowId uint) error {
+	result := DB.Delete(&Calories{}, rowId)
+	if result.Error != nil {
+		return errors.New(fmt.Sprintf("Error deleting calorie row: %v", result.Error))
 	}
 	return nil
 }
 
-func GetCalorieRowById(acctId, rowId int) (*CaloriesDBRow, error) {
-	whereClause := fmt.Sprintf("acct_id='%d' AND id='%d'", acctId, rowId)
-
-	var calorieRow CaloriesDBRow
-	err := GetSingleRow("calories", strings.Join(CaloriesColumns, ","), whereClause).
-		Scan(&calorieRow.Id, &calorieRow.AcctId, &calorieRow.Date, &calorieRow.Calories)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Error finding user: %v", err))
+func GetCalorieRowById(acctId int, rowId uint) (*Calories, error) {
+	var calorie Calories
+	result := DB.Where("acct_id = ?  AND id = ?", acctId, rowId).First(&calorie)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Error finding callorie: %v", result.Error))
 	}
 
-	return &calorieRow, nil
+	return &calorie, nil
 }
 
-func GetAllCalorieRowsByAcctId(acctId int) (*[]CaloriesDBRow, error) {
-	var calorieRows []CaloriesDBRow
-	rows, err := GetRows("calories", strings.Join(CaloriesColumns, ","), fmt.Sprintf("acct_id=%d", acctId), "id")
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Error getting all calories for user %d: %v", acctId, err))
+func GetAllCalorieRowsByAcctId(acctId int) (*[]Calories, error) {
+	var calories []Calories
+	result := DB.Where("acct_id = ?", acctId).Find(&calories)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Error getting all calories for user %d: %v", acctId, result.Error))
 	}
 
-	for rows.Next() {
-		var calorieRow CaloriesDBRow
-		err = rows.Scan(&calorieRow.Id, &calorieRow.AcctId, &calorieRow.Date, &calorieRow.Calories)
-		if err != nil {
-			log.Debugf("Error scanning rowL : %v", err)
-			continue
-		}
-
-		calorieRows = append(calorieRows, calorieRow)
-	}
-
-	return &calorieRows, nil
+	return &calories, nil
 }
 
-func UpdateCalorieRow(rowId, acctId, calories int, timestamp time.Time) error {
-	var updateStrings []string
-	for _, col := range UsersColumns {
-		switch {
-		case strings.HasPrefix(UsersTblCols[col], "text"):
-			updateStrings = append(updateStrings, col+"='%s'")
-		case strings.HasPrefix(UsersTblCols[col], "integer"):
-			updateStrings = append(updateStrings, col+"=%d")
-		case strings.HasPrefix(UsersTblCols[col], "timestamp"):
-			updateStrings = append(updateStrings, col+"=%s")
-		}
+func UpdateCalorieRow(rowId uint, acctId, calories int, timestamp time.Time) error {
+	calorie := Calories{
+		Model:    gorm.Model{ID: rowId},
+		AcctId:   acctId,
+		Date:     timestamp,
+		Calories: calories,
 	}
-
-	updateString := fmt.Sprintf(strings.Join(updateStrings, ","), rowId, acctId, timestamp, calories)
-	err := UpdateRow("users", updateString, "id", rowId)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error updating calories %d: %v", rowId, err))
+	result := DB.Save(&calorie)
+	if result.Error != nil {
+		return errors.New(fmt.Sprintf("Error updating calories %d: %v", rowId, result.Error))
 	}
 
 	return nil

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var calorieRow = CaloriesDBRow{
+var calorieRow = Calories{
 	AcctId:   1,
 	Date:     time.Now(),
 	Calories: 1000,
@@ -29,8 +29,40 @@ func TestGetCalorieRowById(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	} else {
-		if row.Id != id {
+		if row.ID != id {
 			t.Error(err)
+			t.Fail()
+		}
+	}
+
+	cleanUp()
+}
+
+func TestGetAllCaloriesByAcctId(t *testing.T) {
+	err := setup()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	_, err = CreateNewCalorieRow(calorieRow.Calories, calorieRow.AcctId, calorieRow.Date)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	_, err = CreateNewCalorieRow(calorieRow.Calories+100, calorieRow.AcctId, time.Now())
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	rows, err := GetAllCalorieRowsByAcctId(calorieRow.AcctId)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	} else {
+		if len(*rows) < 2 {
 			t.Fail()
 		}
 	}
@@ -73,7 +105,7 @@ func TestUpdateCalorieRow(t *testing.T) {
 		t.Fail()
 	}
 
-	newRow := CaloriesDBRow{
+	newRow := Calories{
 		AcctId:   1,
 		Date:     time.Now(),
 		Calories: 2000,

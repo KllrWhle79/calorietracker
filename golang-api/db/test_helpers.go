@@ -5,13 +5,13 @@ import (
 )
 
 var (
-	testUser = UsersDBRow{
+	testUser = Users{
 		UserName:  "test_user1",
 		Password:  "password",
 		EmailAddr: "test_user1@email.com",
 		Admin:     false,
 	}
-	testAdminUser = UsersDBRow{
+	testAdminUser = Users{
 		UserName:  "admin_test_user",
 		Password:  "password",
 		EmailAddr: "admin_test_user@email.com",
@@ -27,22 +27,5 @@ func setup() error {
 }
 
 func cleanUp() {
-	dropTables()
-	dropSequences()
-}
-
-func dropTables() {
-	for _, tbl := range TableList {
-		if TableExists(tbl) {
-			DropTable(tbl)
-		}
-	}
-}
-
-func dropSequences() {
-	for _, seq := range TableList {
-		if SequeneceExists(seq + "_seq") {
-			DropSequence(seq + "_seq")
-		}
-	}
+	DropTables()
 }

@@ -58,7 +58,7 @@ var createCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	calorieData.ID = calId
+	calorieData.ID = int(calId)
 
 	sendCalResp(w, []calorie{calorieData})
 })
@@ -97,7 +97,7 @@ var getCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	calorieRow, err := db.GetCalorieRowById(userIdInt, calRowIdInt)
+	calorieRow, err := db.GetCalorieRowById(userIdInt, uint(calRowIdInt))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -184,7 +184,7 @@ var updateCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = db.UpdateCalorieRow(calorieData.ID, calorieData.AcctID, calorieData.Calories, calTime)
+	err = db.UpdateCalorieRow(uint(calorieData.ID), calorieData.AcctID, calorieData.Calories, calTime)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -219,7 +219,7 @@ var deleteCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = db.DeleteCalorieRow(calRowIdInt)
+	err = db.DeleteCalorieRow(uint(calRowIdInt))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

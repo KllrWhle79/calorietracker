@@ -41,7 +41,7 @@ var loginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	validToken, err := generateJWT(user.UserName, user.Admin, user.Id)
+	validToken, err := generateJWT(user.UserName, user.Admin, int(user.ID))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -49,7 +49,7 @@ var loginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 
 	var token token
 	token.TokenString = validToken
-	token.AcctId = user.Id
+	token.AcctId = int(user.ID)
 	token.Username = user.UserName
 	token.Admin = strconv.FormatBool(user.Admin)
 	w.Header().Set("Content-Type", "application/json")
