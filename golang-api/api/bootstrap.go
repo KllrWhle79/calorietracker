@@ -37,11 +37,11 @@ func MakeRouter() *mux.Router {
 	router.Handle("/user", authMiddleWare(updateUser, false)).Queries("username", "{username}").Methods(http.MethodPost)
 	router.Handle("/users", authMiddleWare(getAllUsers, true)).Methods(http.MethodGet)
 
-	router.Handle("/calories", authMiddleWare(createCalorieEntry, false)).Methods(http.MethodPut)
+	router.Handle("/calorie", authMiddleWare(createCalorieEntry, false)).Methods(http.MethodPut)
+	router.Handle("/calorie", authMiddleWare(getCalorieEntry, false)).Queries("acct_id", "{acct_id}", "cal_id", "{cal_id}").Methods(http.MethodGet)
+	router.Handle("/calorie", authMiddleWare(deleteCalorieEntry, false)).Queries("acct_id", "{acct_id}", "cal_id", "{cal_id}").Methods(http.MethodDelete)
+	router.Handle("/calorie", authMiddleWare(updateCalorieEntry, false)).Methods(http.MethodPost)
 	router.Handle("/calories", authMiddleWare(getAllCaloriesForUser, false)).Queries("acct_id", "{acct_id}").Methods(http.MethodGet)
-	router.Handle("/calories", authMiddleWare(getCalorieEntry, false)).Queries("acct_id", "{acct_id}", "calId", "{calId}").Methods(http.MethodGet)
-	router.Handle("/calories", authMiddleWare(deleteCalorieEntry, false)).Queries("acct_id", "{acct_id}", "calId", "{calId}").Methods(http.MethodDelete)
-	router.Handle("/calories", authMiddleWare(updateCalorieEntry, false)).Methods(http.MethodPost)
 
 	return router
 }

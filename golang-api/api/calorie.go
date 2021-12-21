@@ -63,17 +63,17 @@ var createCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 	sendCalResp(w, []calorie{calorieData})
 })
 
-// swagger:operation GET /calories/id={id}&calId={calId} calories getCalorieEntries
+// swagger:operation GET /calories/acct_id={id}&cal_id={cal_id} calories getCalorieEntries
 // ---
 // summary: Returns a calories entry based on the acct id
 // description: "Retrieves a single calorie entry for a specified user."
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: number
 //   required: true
-// - name: calId
+// - name: cal_id
 //   in: path
 //   description: id of the calorie row
 //   type: number
@@ -83,14 +83,14 @@ var createCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 //    "$ref": "#/responses/calorieResponse
 //  "401": "Unauthorized Request"
 var getCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	userId, foundUserId := mux.Vars(r)["id"]
+	userId, foundUserId := mux.Vars(r)["acct_id"]
 	userIdInt, err := strconv.Atoi(userId)
 	if !foundUserId || err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	calorieRowId, foundCalRowId := mux.Vars(r)["calId"]
+	calorieRowId, foundCalRowId := mux.Vars(r)["cal_id"]
 	calRowIdInt, err := strconv.Atoi(calorieRowId)
 	if !foundCalRowId || err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -111,12 +111,12 @@ var getCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 	}})
 })
 
-// swagger:operation GET /calories/id={id} calories getAllCaloriesForUser
+// swagger:operation GET /calories/acct_id={id} calories getAllCaloriesForUser
 // ---
 // summary: Returns all the calories entries based on the acct id
 // description: "Retrieves all the calorie entries for a specified user."
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: number
@@ -126,7 +126,7 @@ var getCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 //    "$ref": "#/responses/calorieResponse
 //  "401": "Unauthorized Request"
 var getAllCaloriesForUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	userId, foundUserId := mux.Vars(r)["id"]
+	userId, foundUserId := mux.Vars(r)["acct_id"]
 	userIdInt, err := strconv.Atoi(userId)
 	if !foundUserId || err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -152,17 +152,17 @@ var getAllCaloriesForUser = http.HandlerFunc(func(w http.ResponseWriter, r *http
 	sendCalResp(w, calories)
 })
 
-// swagger:operation POST /calories/id={id}&calId={calId} calories updateCalorieEntry
+// swagger:operation POST /calories/acct_id={id}&cal_id={cal_id} calories updateCalorieEntry
 // ---
 // summary: Updates a calorie entry
 // description: "Update a calorie entry based on the row id."
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user
 //   type: number
 //   required: true
-// - name: calId
+// - name: cal_id
 //   in: path
 //   description: id of the calorie row
 //   type: number
@@ -193,17 +193,17 @@ var updateCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 	sendCalResp(w, []calorie{calorieData})
 })
 
-// swagger:operation DELETE /calories/id={id}&calId={calId} calories deleteCalorieEntry
+// swagger:operation DELETE /calories/acct_id={id}&cal_id={cal_id} calories deleteCalorieEntry
 // ---
 // summary: Deletes a calorie entry
 // description: "Delete a calorie entry based on the row id."
 // parameters:
-// - name: id
+// - name: acct_id
 //   in: path
 //   description: id of the user, used for auth purposes only
 //   type: number
 //   required: true
-// - name: calId
+// - name: cal_id
 //   in: path
 //   description: id of the calorie row
 //   type: number
@@ -212,7 +212,7 @@ var updateCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 //  "200": "calorie entry deleted"
 //  "401": "Unauthorized Request"
 var deleteCalorieEntry = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	calorieRowId, foundCalRowId := mux.Vars(r)["calId"]
+	calorieRowId, foundCalRowId := mux.Vars(r)["cal_id"]
 	calRowIdInt, err := strconv.Atoi(calorieRowId)
 	if !foundCalRowId || err != nil {
 		w.WriteHeader(http.StatusBadRequest)

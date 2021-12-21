@@ -16,7 +16,7 @@ func TestCreateUserAndLogin(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("PUT", "/user", bytes.NewBuffer(testAdminUser))
+	req, err := http.NewRequest(http.MethodPut, "/user", bytes.NewBuffer(testAdminUser))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -31,7 +31,7 @@ func TestCreateUserAndLogin(t *testing.T) {
 	json.NewDecoder(response.Body).Decode(&userData)
 
 	loginJson := []byte(`{"user_name": "admin_test_user1","password": "password"}`)
-	req, err = http.NewRequest("POST", "/login", bytes.NewBuffer(loginJson))
+	req, err = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(loginJson))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -45,7 +45,7 @@ func TestCreateUserAndLogin(t *testing.T) {
 	var tokenData token
 	json.NewDecoder(response.Body).Decode(&tokenData)
 
-	req, err = http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", userData.Body[0].Id), nil)
+	req, err = http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=%d", userData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -67,7 +67,7 @@ func TestCreateUserAndLoginFail(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("PUT", "/user", bytes.NewBuffer(testAdminUser))
+	req, err := http.NewRequest(http.MethodPut, "/user", bytes.NewBuffer(testAdminUser))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -82,7 +82,7 @@ func TestCreateUserAndLoginFail(t *testing.T) {
 	json.NewDecoder(response.Body).Decode(&userData)
 
 	loginJson := []byte(`{"user_name": "admin_test_user1","password": "badpassword"}`)
-	req, err = http.NewRequest("POST", "/login", bytes.NewBuffer(loginJson))
+	req, err = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(loginJson))
 	if err != nil {
 		t.Error(err)
 		t.Fail()

@@ -16,7 +16,8 @@ func TestGetSameUserById(t *testing.T) {
 		return
 	}
 
-	createUserForTest(t, testUser)
+	response := createUserForTest(t, testUser)
+	checkResponseCode(t, http.StatusOK, response.Code)
 	loginTestUser(t, false)
 
 	if testTokenData.TokenString == "" {
@@ -25,7 +26,7 @@ func TestGetSameUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -33,7 +34,7 @@ func TestGetSameUserById(t *testing.T) {
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", testTokenData.TokenString))
 
-	response := executeRequest(req)
+	response = executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	cleanUp()
@@ -56,7 +57,7 @@ func TestGetDifferentUserNotAdmin(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=100"), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -89,7 +90,7 @@ func TestGetDifferentUserAdmin(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=%d", nonAdminId), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=%d", nonAdminId), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -120,7 +121,7 @@ func TestGetUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=badId"), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=badId"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -151,7 +152,7 @@ func TestGetUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?acct_id=100"), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -182,7 +183,7 @@ func TestGetSameUserByUsername(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -213,7 +214,7 @@ func TestGetUserByUsernameNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/user?username=badusername"), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/user?username=badusername"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -244,7 +245,7 @@ func TestDeleteUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/user?acct_id=%d", testUserData.Body[0].Id), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -275,7 +276,7 @@ func TestDeleteUserByIdBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=badid"), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/user?acct_id=badid"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -306,7 +307,7 @@ func TestDeleteUserByIdNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?acct_id=100"), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/user?acct_id=100"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -337,7 +338,7 @@ func TestDeleteUserByUsername(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/user?username=%s", testUserData.Body[0].UserName), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -368,7 +369,7 @@ func TestDeleteUserByUsernameNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/user?username=badusername"), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/user?username=badusername"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -401,7 +402,7 @@ func TestUpdateUserById(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=%d", userId), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("/user?acct_id=%d", userId), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -433,7 +434,7 @@ func TestUpdateUserByIdFailNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=100"), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("/user?acct_id=100"), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -465,7 +466,7 @@ func TestUpdateUserByIdFailBadId(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?acct_id=badid"), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("/user?acct_id=badid"), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -498,7 +499,7 @@ func TestUpdateUserByUsername(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?username=%s", userName), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("/user?username=%s", userName), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -530,7 +531,7 @@ func TestUpdateUserByUsernameFailNoUser(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("/user?username=nouser"), bytes.NewBuffer(testUserUpdate))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("/user?username=nouser"), bytes.NewBuffer(testUserUpdate))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -563,7 +564,7 @@ func TestGetAllUsers(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/users"), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/users"), nil)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -581,6 +582,67 @@ func TestGetAllUsers(t *testing.T) {
 		t.Fail()
 		return
 	}
+
+	cleanUp()
+}
+
+func TestGetAllUsersUnAuthorized(t *testing.T) {
+	err := testSetup()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	createUserForTest(t, testUser)
+	loginTestUser(t, false)
+
+	if testTokenData.TokenString == "" {
+		t.Error("Error creating user or token data")
+		t.Fail()
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/users"), nil)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", testTokenData.TokenString))
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusUnauthorized, response.Code)
+
+	cleanUp()
+}
+
+func TestGetAllUsersNoToken(t *testing.T) {
+	err := testSetup()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	createUserForTest(t, testAdminUser)
+	loginTestUser(t, true)
+
+	if testTokenData.TokenString == "" {
+		t.Error("Error creating user or token data")
+		t.Fail()
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/users"), nil)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusUnauthorized, response.Code)
 
 	cleanUp()
 }

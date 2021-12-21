@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/KllrWhle79/calorietracker/config"
 	"github.com/KllrWhle79/calorietracker/db"
 	"github.com/gorilla/mux"
@@ -49,7 +50,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 }
 
 func createUserForTest(t *testing.T, userStr []byte) *httptest.ResponseRecorder {
-	req, err := http.NewRequest("PUT", "/user", bytes.NewBuffer(userStr))
+	req, err := http.NewRequest(http.MethodPut, "/user", bytes.NewBuffer(userStr))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -72,7 +73,7 @@ func loginTestUser(t *testing.T, admin bool) {
 	} else {
 		loginJson = []byte(`{"user_name": "test_user1","password": "password"}`)
 	}
-	req, err := http.NewRequest("POST", "/login", bytes.NewBuffer(loginJson))
+	req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(loginJson))
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -84,4 +85,19 @@ func loginTestUser(t *testing.T, admin bool) {
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	json.NewDecoder(response.Body).Decode(&testTokenData)
+}
+
+func createTestCalorie(t *testing.T, caloreStr []byte) *httptest.ResponseRecorder {
+	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/calorie"), bytes.NewBuffer(caloreStr))
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return nil
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", testTokenData.TokenString))
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	return response
 }
