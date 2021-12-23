@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
+import {useNavigate} from "react-router-dom";
 
 async function loginUser(credentials) {
     return fetch('http://localhost:8000/login', {
@@ -9,12 +10,17 @@ async function loginUser(credentials) {
         },
         body: JSON.stringify(credentials)
     })
-        .then(data => data.json())
+        .then(data => {
+            if (data.ok) {
+                return data.json();
+            }
+        })
 }
 
 export default function Login({setToken}) {
-    const [username, setUserName] = useState();
-    const [password, setPassword] = useState();
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -22,7 +28,13 @@ export default function Login({setToken}) {
             "user_name": username,
             "password": password
         });
-        setToken(token);
+        if (token) {
+            setToken(token);
+            navigate("/dashboard", {replace: true})
+        }
+
+        setUserName("");
+        setPassword("");
     }
 
     return (
@@ -31,12 +43,14 @@ export default function Login({setToken}) {
 
             <div className="form-group">
                 <label>Username</label>
-                <input type="text" className="form-control" placeholder="Enter username" onChange={e => setUserName(e.target.value)}/>
+                <input type="text" className="form-control" placeholder="Enter username" value={username}
+                       onChange={e => setUserName(e.target.value)}/>
             </div>
 
             <div className="form-group">
                 <label>Password</label>
-                <input type="password" className="form-control" placeholder="Enter password" onChange={e => setPassword(e.target.value)}/>
+                <input type="password" className="form-control" placeholder="Enter password" value={password}
+                       onChange={e => setPassword(e.target.value)}/>
             </div>
 
             {/*<div className="form-group">*/}
