@@ -31,6 +31,8 @@ export default function Login({setToken}) {
         if (token) {
             setToken(token);
             navigate("/dashboard", {replace: true})
+        } else {
+
         }
 
         setUserName("");
