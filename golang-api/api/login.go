@@ -14,7 +14,7 @@ type authentication struct {
 
 type token struct {
 	Admin       string `json:"admin"`
-	Username    string `json:"user_name"`
+	FirstName   string `json:"first_name"`
 	AcctId      int    `json:"acct_id"`
 	TokenString string `json:"token"`
 }
@@ -50,7 +50,7 @@ var loginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	var token token
 	token.TokenString = validToken
 	token.AcctId = int(user.ID)
-	token.Username = user.UserName
+	token.FirstName = user.FirstName
 	token.Admin = strconv.FormatBool(user.Admin)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(token)

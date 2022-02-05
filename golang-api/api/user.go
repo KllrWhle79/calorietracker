@@ -13,6 +13,7 @@ type user struct {
 	Id        int    `json:"acct_id"`
 	UserName  string `json:"user_name"`
 	EmailAddr string `json:"email_addr"`
+	FirstName string `json:"first_name"`
 	Password  string `json:"password"`
 	Admin     bool   `json:"admin"`
 }
@@ -56,7 +57,7 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	userData.Password = string(hashedPassword)
 
-	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
+	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -224,7 +225,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userData.Password = string(hashedPassword)
 	}
 
-	err = db.UpdateUserById(userToUpdate.ID, userData.UserName, userData.EmailAddr, userData.Password, userData.Admin)
+	err = db.UpdateUserById(userToUpdate.ID, userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
@@ -275,3 +276,5 @@ var deleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 })
+
+//TODO: Add password update endpoint

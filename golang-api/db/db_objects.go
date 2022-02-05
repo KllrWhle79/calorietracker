@@ -11,6 +11,7 @@ type Users struct {
 	gorm.Model
 	UserName  string `gorm:"unique" json:"user_name"`
 	EmailAddr string `gorm:"unique" json:"email_addr"`
+	FirstName string `json:"first_name"`
 	Password  string `json:"password"`
 	Admin     bool   `json:"admin"`
 }

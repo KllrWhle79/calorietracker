@@ -5,5 +5,5 @@ psqlHost: localhost
 psqlPort: 5430
 psqlUser: user
 psqlPassword: password
-psqlDB: calorietracker_db
+psqlDB: postgres_db
 testPort: 5431

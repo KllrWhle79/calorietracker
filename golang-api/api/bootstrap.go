@@ -12,7 +12,7 @@ func Start() {
 	router := MakeRouter()
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:4000"},
 		AllowedMethods: []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions},
 		AllowedHeaders: []string{"X-Requested-With", "Content-Type"},
 	})

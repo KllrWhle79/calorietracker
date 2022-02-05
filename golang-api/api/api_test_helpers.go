@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	testUser       = []byte(`{"user_name": "test_user1","password": "password","email_addr": "test_user1@email.com","admin": false}`)
-	testUser2      = []byte(`{"user_name": "test_user2","password": "password","email_addr": "test_user2@email.com","admin": false}`)
-	testUserUpdate = []byte(`{"user_name": "test_user1","password": "password1","email_addr": "test_user1@email.com","admin": false}`)
-	testAdminUser  = []byte(`{"user_name": "admin_test_user1","password": "password","email_addr": "admin_test_user1@email.com","admin": true}`)
+	testUser       = []byte(`{"user_name": "test_user1","password": "password","email_addr": "test_user1@email.com","first_name": "User1","admin": false}`)
+	testUser2      = []byte(`{"user_name": "test_user2","password": "password","email_addr": "test_user2@email.com","first_name": "User2","admin": false}`)
+	testUserUpdate = []byte(`{"user_name": "test_user1","password": "password1","email_addr": "test_user1@email.com","first_name": "UpdatedUser","admin": false}`)
+	testAdminUser  = []byte(`{"user_name": "admin_test_user1","password": "password","email_addr": "admin_test_user1@email.com","first_name": "Admin","admin": true}`)
 )
 
 var testRouter *mux.Router

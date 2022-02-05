@@ -8,12 +8,14 @@ var (
 	testUser = Users{
 		UserName:  "test_user1",
 		Password:  "password",
+		FirstName: "Test",
 		EmailAddr: "test_user1@email.com",
 		Admin:     false,
 	}
 	testAdminUser = Users{
 		UserName:  "admin_test_user",
 		Password:  "password",
+		FirstName: "Admin",
 		EmailAddr: "admin_test_user@email.com",
 		Admin:     true,
 	}
