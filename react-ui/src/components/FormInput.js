@@ -10,7 +10,7 @@ export default function FormInput(props) {
             name={props.name}
             value={props.value}
             onChange={props.handleChange}
-            onKeyDown={props.handleKeyDown}
+            // onKeyDown={props.handleKeyDown}
             />
     )
 }

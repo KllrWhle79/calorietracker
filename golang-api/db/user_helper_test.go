@@ -21,7 +21,7 @@ func TestCreateNewUserAndLogin(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -59,7 +59,7 @@ func TestGetMultipleUsers(t *testing.T) {
 		return
 	}
 
-	id1, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id1, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -73,7 +73,7 @@ func TestGetMultipleUsers(t *testing.T) {
 		return
 	}
 
-	id2, err := CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin)
+	id2, err := CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin, testUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -111,7 +111,7 @@ func TestGetAllUsers(t *testing.T) {
 		return
 	}
 
-	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -125,7 +125,7 @@ func TestGetAllUsers(t *testing.T) {
 		return
 	}
 
-	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin)
+	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin, testUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -163,14 +163,14 @@ func TestCreateNewUserFail(t *testing.T) {
 		return
 	}
 
-	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin)
+	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin, testUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
 
-	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin)
+	_, err = CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin, testUser.CalMax)
 	if err == nil {
 		t.Error(err)
 		t.Fail()
@@ -195,7 +195,7 @@ func TestGetUserById(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin)
+	id, err := CreateNewUser(testUser.UserName, testUser.EmailAddr, string(hashedPassword), testUser.FirstName, testUser.Admin, testUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -240,7 +240,7 @@ func TestUserLoginBadUsername(t *testing.T) {
 		return
 	}
 
-	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -272,7 +272,7 @@ func TestUserLoginBadPassword(t *testing.T) {
 		return
 	}
 
-	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	_, err = CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -297,7 +297,7 @@ func TestDeleteUserById(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, testAdminUser.Password, testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, testAdminUser.Password, testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -329,7 +329,7 @@ func TestCreateAndDeleteUserById(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -375,7 +375,7 @@ func TestCreateAndDeleteUserByUsername(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -421,7 +421,7 @@ func TestDeleteUserByIdFail(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -460,7 +460,7 @@ func TestDeleteUserByUsernameFail(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -499,7 +499,7 @@ func TestUpdateUserById(t *testing.T) {
 		return
 	}
 
-	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin)
+	id, err := CreateNewUser(testAdminUser.UserName, testAdminUser.EmailAddr, string(hashedPassword), testAdminUser.FirstName, testAdminUser.Admin, testAdminUser.CalMax)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -508,7 +508,7 @@ func TestUpdateUserById(t *testing.T) {
 
 	hashedPassword, err = bcrypt.GenerateFromPassword([]byte("new_password"), 14)
 
-	err = UpdateUserById(id, "updatedUser", "updatedUser@gmail.com", string(hashedPassword), "Updated", false)
+	err = UpdateUserById(id, "updatedUser", "updatedUser@gmail.com", string(hashedPassword), "Updated", false, 2400)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

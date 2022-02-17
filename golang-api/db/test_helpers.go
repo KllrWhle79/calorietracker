@@ -11,6 +11,7 @@ var (
 		FirstName: "Test",
 		EmailAddr: "test_user1@email.com",
 		Admin:     false,
+		CalMax:    2500,
 	}
 	testAdminUser = Users{
 		UserName:  "admin_test_user",
@@ -18,6 +19,7 @@ var (
 		FirstName: "Admin",
 		EmailAddr: "admin_test_user@email.com",
 		Admin:     true,
+		CalMax:    3000,
 	}
 )
 

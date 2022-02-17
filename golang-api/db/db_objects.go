@@ -14,6 +14,7 @@ type Users struct {
 	FirstName string `json:"first_name"`
 	Password  string `json:"password"`
 	Admin     bool   `json:"admin"`
+	CalMax    int    `json:"cal_max"`
 }
 
 type Calories struct {

@@ -10,13 +10,14 @@ export default function useAuth() {
 
     //register user  
     const registerUser = async (data) => {
-        const {username, email, password, firstname} = data;
+        const {username, email, password, firstname, calorie_max} = data;
         return axios.put(`http://localhost:8000/user`, {
             "user_name": username,
             "email_addr": email,
             "first_name": firstname,
             password,
-            "admin": false
+            "admin": false,
+            "calorie_max": Number(calorie_max)
         }).then(async () => {
             await loginUser({"username": username, "password": password});
         })

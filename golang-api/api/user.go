@@ -16,6 +16,7 @@ type user struct {
 	FirstName string `json:"first_name"`
 	Password  string `json:"password"`
 	Admin     bool   `json:"admin"`
+	CalMax    int    `json:"calorie_max"`
 }
 
 //swagger:response userResponse
@@ -57,7 +58,7 @@ var createUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	userData.Password = string(hashedPassword)
 
-	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin)
+	newUserId, err := db.CreateNewUser(userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin, userData.CalMax)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -111,6 +112,7 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
 			Admin:     userRow.Admin,
+			CalMax:    userRow.CalMax,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -128,6 +130,7 @@ var getUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			EmailAddr: userRow.EmailAddr,
 			Password:  userRow.Password,
 			Admin:     userRow.Admin,
+			CalMax:    userRow.CalMax,
 		}})
 	}
 })
@@ -156,6 +159,7 @@ var getAllUsers = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 			EmailAddr: userData.EmailAddr,
 			Password:  userData.Password,
 			Admin:     userData.Admin,
+			CalMax:    userData.CalMax,
 		})
 	}
 
@@ -225,7 +229,7 @@ var updateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userData.Password = string(hashedPassword)
 	}
 
-	err = db.UpdateUserById(userToUpdate.ID, userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin)
+	err = db.UpdateUserById(userToUpdate.ID, userData.UserName, userData.EmailAddr, userData.Password, userData.FirstName, userData.Admin, userData.CalMax)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}

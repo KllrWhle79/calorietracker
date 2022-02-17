@@ -9,13 +9,14 @@ import (
 )
 
 // CreateNewUser /* Creates a new user in the database. Assumes the password has already been hashed.
-func CreateNewUser(userName, emailAddress, hashedPassword, firstName string, admin bool) (uint, error) {
+func CreateNewUser(userName, emailAddress, hashedPassword, firstName string, admin bool, calorieMax int) (uint, error) {
 	user := Users{
 		UserName:  userName,
 		EmailAddr: emailAddress,
 		FirstName: firstName,
 		Password:  hashedPassword,
 		Admin:     admin,
+		CalMax:    calorieMax,
 	}
 
 	result := DB.Create(&user)
@@ -108,7 +109,8 @@ func DeleteUserById(id uint) error {
 }
 
 // UpdateUserById /* Updates a user's entry in the database, looks up the user by database id
-func UpdateUserById(id uint, userName, emailAddr, password, firstName string, admin bool) error {
+func UpdateUserById(id uint, userName, emailAddr, password, firstName string, admin bool, calorieMax int,
+) error {
 	user := Users{
 		Model:     gorm.Model{ID: id},
 		UserName:  userName,
@@ -116,6 +118,7 @@ func UpdateUserById(id uint, userName, emailAddr, password, firstName string, ad
 		FirstName: firstName,
 		Password:  password,
 		Admin:     admin,
+		CalMax:    calorieMax,
 	}
 
 	result := DB.Save(&user)
